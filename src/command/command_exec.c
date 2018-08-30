@@ -6,8 +6,13 @@
 static void command_exec_child(shell_t *shell, command_chain_t *chain,
 	command_t *cmd)
 {
-	char *exec_path = path_expand(shell, cmd->argv[0]);
+	char *_cmd = cmd->argv[0];
+	char *exec_path;
 
+	/* Ignore aliases expansion with `\` */
+	if (_cmd && _cmd[0] == '\\')
+		_cmd++;
+	exec_path = path_expand(shell, _cmd);
 	if (exec_path)
 	{
 		execve(exec_path, cmd->argv, shell->envp);
